@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Configuration.API.Controllers;
 
+[ApiController]
 [Route("/[controller]/[action]")]
 public class TopicsController : ControllerBase
 {

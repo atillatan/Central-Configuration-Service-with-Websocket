@@ -10,7 +10,7 @@ The Configuration server is implemented using .NET rest API. It accepts client c
 - Topics
   - Topics are a simple mechanism for the client to get notifications about the changes in the Server. 
   - Clients can subscribe a particular Topics. 
-  - Server send a notification to the Topics for registered client for any of the Settings (on which client subscribes) changes.
+  - Server send a notification to the Topics for registered client for any of the Topics (on which client subscribes) changes.
   - Topic notifications are triggered only once. If a client wants a Topic notification again, it must be done through another read operation. 
   - When a connection session is expired, the client will be disconnected from the server and the associated topics are also removed.
   - Once a Server starts, it will wait for the clients to connect particular topics
@@ -19,6 +19,7 @@ The Configuration server is implemented using .NET rest API. It accepts client c
   - If the client does not get an acknowledgment, it simply tries to connect after particular time period.
   - Once connected to the Server, the client will send heartbeats(ping) to the Server in a regular interval to make sure that the connection is not lost.
 
+---
 
 - Add singleten WebSocketHandler as a service, configure http request pipeline for using WebSocket
 
@@ -197,6 +198,14 @@ public class WebsocketHandler : IWebsocketHandler
 execute following lines in your chrome browser console
 
 ```javascript
-let websocket = new WebSocket("ws://localhost:8106/topics/subscribe/topic1?client=atilla1")
+let websocket = new WebSocket("ws://localhost:8106/topics/subscribe/topic1?client=atilla1");
+websocket.onmessage = function(event) { if(event.data)console.log(event.data); }
 websocket.send('Hello');
+```
+
+
+```shell
+Client atilla1 has joined the TOPIC:topic1, with sessionId:atilla1_topic1_101edf6f-3e6e-4d19-a7ab-8e3e2acd2be4
+Received message atilla1_topic1_101edf6f-3e6e-4d19-a7ab-8e3e2acd2be4:hello
+Sent message: atilla1_topic1_101edf6f-3e6e-4d19-a7ab-8e3e2acd2be4:hello => atilla1_topic1_101edf6f-3e6e-4d19-a7ab-8e3e2acd2be4
 ```
