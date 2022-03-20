@@ -1,78 +1,15 @@
-# Central-Configuration-Service-with-Websocket
-The Configuration server is implemented using .NET rest API. It accepts client connections and notifies them of topic updates.
 
+using System.Collections.Concurrent;
+using System.Net.WebSockets;
+using System.Text;
 
-- Session 
-  - Once a client connects to a server, the session will be established and a session id is assigned to the client.
-  - The client sends heartbeats(ping) at a particular time interval to keep the session valid.
-  - If the Server does not receive heartbeats from a client for more than the period (session timeout) specified at the starting of the service, it decides that the client died.
- 
-- Topics
-  - Topics are a simple mechanism for the client to get notifications about the changes in the Server. 
-  - Clients can subscribe a particular Topics. 
-  - Server send a notification to the Topics for registered client for any of the Settings (on which client subscribes) changes.
-  - Topic notifications are triggered only once. If a client wants a Topic notification again, it must be done through another read operation. 
-  - When a connection session is expired, the client will be disconnected from the server and the associated topics are also removed.
-  - Once a Server starts, it will wait for the clients to connect particular topics
-  - Clients will connect to one of the Topic in the Server.
-  - Once a client is connected, the server assigns a session ID to the particular client and sends an acknowledgement to the client
-  - If the client does not get an acknowledgment, it simply tries to connect after particular time period.
-  - Once connected to the Server, the client will send heartbeats(ping) to the Server in a regular interval to make sure that the connection is not lost.
+namespace Configuration.API.Configuration;
 
-
-- Add singleten WebSocketHandler as a service, configure http request pipeline for using WebSocket
-
-
-```csharp
-// Program.cs
-...
-builder.Services.AddSingleton<IWebsocketHandler, WebsocketHandler>();
-...
-
-app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromMinutes(2) });
-...
-```
-
-- Add responsible controler for WebSocket requests
-
-```csharp
-
-[ApiController]
-[Route("/[controller]/[action]")]
-public class TopicsController : ControllerBase
+public interface IWebsocketHandler
 {
-  //  private readonly Serilog.ILogger _logger = Log.ForContext<TopicsController>();
-    public IWebsocketHandler WebsocketHandler { get; }
-
-    public TopicsController(IWebsocketHandler websocketHandler)
-    {
-        WebsocketHandler = websocketHandler;
-    }
-
-    [HttpGet("{topic}")]
-    public async Task Subscribe([FromRoute] string topic, [FromQuery] string client)
-    {
-        if (HttpContext.WebSockets.IsWebSocketRequest)
-        {
-            using var websocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            await WebsocketHandler.Handle(topic, client, websocket);
-           // _logger.Information("WebSocket connection established");
-        }
-        else
-        {
-            HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-        }
-    }
+    Task Handle(string topic, string client, WebSocket websocket);
 }
 
-
-```
-
-
-- Add WebSocketHandler
-
-
-```csharp
 public class WebsocketHandler : IWebsocketHandler
 {    
     private static ConcurrentDictionary<string, WebSocket> _websocketConnections = new ConcurrentDictionary<string, WebSocket>();
@@ -184,19 +121,10 @@ public class WebsocketHandler : IWebsocketHandler
                     Console.WriteLine(cleanupMessage);
                 }
 
-                await Task.Delay(1000*60); 
+                await Task.Delay(5000);
             }
 
         });
     }
 }
-```
 
-
-- Test connection
-execute following lines in your chrome browser console
-
-```javascript
-let websocket = new WebSocket("ws://localhost:8106/topics/subscribe/topic1?client=atilla1")
-websocket.send('Hello');
-```
