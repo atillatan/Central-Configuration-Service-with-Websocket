@@ -4,5 +4,25 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			"**/.vs": true,
+			"**/.vscode": false,
+			"**/obj": true,
+			"**/bin": true,
+			"Global.json": false,
+			"*.sln": false,
+			"build": false,
+			"**/*node_modules": true,
+			".gitpod.yml":true, 
+			".gitlab-ci.yml":true, 
+			".gitignore":false, 
+			".dockerignore":true,
+			"LICENSE":false,
+			"README.md":false,
+			"Dockerfile":false,
+			"**/*.user":true,
+			"**/Properties":true
+		}
+	}
 }

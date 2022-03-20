@@ -24,17 +24,17 @@
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "ASPNETCORE_URLS": "http://localhost:8106;https://localhost:8107",
+                "ASPNETCORE_URLS": "https://localhost:8181/",
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             },
             "launchBrowser": {
                 "enabled": true,
-                "launchUrl": "https://localhost:8107/swagger",                
+                "launchUrl": "https://localhost:8181/swagger",                
                 "windows": {
                     "command": "cmd.exe",
-                    "args": "/C start https://localhost:8107/swagger"
+                    "args": "/C start https://localhost:8181/swagger"
                 },
                 "osx": {
                     "command": "open"
