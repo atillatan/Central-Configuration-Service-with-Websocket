@@ -21,7 +21,7 @@ The Configuration server is implemented using .NET rest API. It accepts client c
 
 ---
 
-- Add singleten WebSocketHandler as a service, configure http request pipeline for using WebSocket
+- Add singleton WebSocketHandler as a service, configure http request pipeline for using WebSocket
 
 
 ```csharp
